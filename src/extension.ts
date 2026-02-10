@@ -3,11 +3,9 @@ import { simpleGit, SimpleGit } from 'simple-git';
 import * as https from 'https';
 import * as http from 'http';
 import * as url from 'url';
-import { log } from 'console';
-import { match } from 'assert';
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('插件 "vscode-git-commit-message-generator" 已激活');
+  console.log('[EXTENSION] vscode-git-commit-message-generator activated');
 
   // 注册命令
   let disposable = vscode.commands.registerCommand('vscode-git-commit-message-generator.generateCommitMessage', async (sourceControl) => {
