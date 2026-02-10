@@ -1,15 +1,16 @@
 {
   "name": "vscode-git-commit-message-generator",
   "displayName": "Git Commit Message Generator",
-  "description": "一个强大的Git提交信息生成器，基于AI模型自动分析暂存的代码变更并生成规范的commit message。支持Ollama和OpenAI等多种LLM服务，可自定义提示词模板、温度参数等配置选项，让Git提交更加智能和高效。",
+  "description": "Making Git commits smarter and more efficient.",
   "version": "0.1.6",
   "publisher": "chenkai2",
   "author": {
-    "name": "chenkai2"
+    "name": "klaveriuzent",
+    "url": "https://github.com/klaveriuzent"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chenkai2/vscode-git-commit-message-generator.git"
+    "url": "https://github.com/klaveriuzent/vscode-git-commit-generator.git"
   },
   "keywords": [
     "git",
@@ -37,7 +38,7 @@
     "commands": [
       {
         "command": "vscode-git-commit-message-generator.generateCommitMessage",
-        "title": "生成 Commit Message",
+        "title": "Generate Commit Message",
         "icon": {
           "dark": "media/commit-message-generator-dark.svg",
           "light": "media/commit-message-generator-light.svg"
@@ -82,7 +83,7 @@
             "自定义配置"
           ],
           "default": "custom",
-          "description": "选择LLM服务提供商"
+          "description": "Choose LLM service provider"
         },
         "vscode-git-commit-message-generator.providers.aliyun.url": {
           "type": "string",

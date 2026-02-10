@@ -1,80 +1,106 @@
 # Git Commit Message Generator
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/chenkai2/vscode-git-commit-message-generator/refs/heads/main/media/panda-avatar.png" alt="Git Commit Message Generator Logo" width="128" height="128">
+  <img src="https://raw.githubusercontent.com/klaveriuzent/vscode-git-commit-generator/main/media/panda-avatar.png" alt="Git Commit Message Generator Logo" width="128" height="128">
 </p>
 
-一个强大的Git提交信息生成器，基于AI模型自动分析暂存的代码变更并生成规范的commit message。
+A powerful Git commit message generator that uses AI models to automatically analyze staged code changes and generate well-structured, standardized commit messages.
 
-## 功能特点
+---
 
-- 🤖 基于AI模型自动分析代码变更
-- 🔄 支持多种LLM服务（Ollama、OpenAI、阿里云百炼、火山引擎等）
-- 🌍 支持中英文等多语言提交信息
-- ⚙️ 可自定义提示词模板和参数配置
-- 🎨 优雅的用户界面和交互体验
-- 🚀 展示推理过程，支持本地部署的Ollama
+## Features
 
-## 安装
+- 🤖 Automatically analyzes code changes using AI models  
+- 🔄 Supports multiple LLM services (Ollama, OpenAI, 阿里云百炼, 火山引擎, etc.)  
+- 🌍 Supports multilingual commit messages (Chinese, English, and more)  
+- ⚙️ Customizable prompt templates and generation parameters  
+- 🎨 Clean and intuitive user interface  
+- 🚀 Displays reasoning process for supported models, with local Ollama support  
 
-1. 在VSCode中打开扩展市场
-2. 搜索"Git Commit Message Generator"
-3. 点击安装即可
+---
 
-## 使用方法
+## Installation
 
-1. 在设置中配置AI服务的API相关信息
-   - 默认使用阿里云百炼的AI接口，模型为`deepseek-r1-distill-llama-70b`
-     - 获取API密钥：[阿里云百炼](https://bailian.console.aliyun.com/?apiKey=1#/api-key)
-     - 生成密钥后，可以直接使用各种模型，新用户半年内每种模型免费 100w tokens，可以用的模型有：
+1. Open the VS Code Extensions Marketplace  
+2. Search for **Git Commit Message Generator**  
+3. Click **Install**
+
+---
+
+## Usage
+
+1. Configure your AI service API settings in VS Code
+   - By default, the extension uses **阿里云百炼** with the model `deepseek-r1-distill-llama-70b`
+     - Get an API key: [阿里云百炼](https://bailian.console.aliyun.com/?apiKey=1#/api-key)
+     - After generating an API key, you can directly use multiple models. New users receive **1,000,000 free tokens per model for 6 months**. Available models include:
        - `deepseek-v3`
        - `deepseek-r1`
        - `qwen2.5-32b-instruct`
        - `deepseek-r1-distill-qwen-32b`
        - `qwen-plus`
-       - `deepseek-r1-distill-llama-70b` 这个模型 free，只是用的人太多有点慢
+       - `deepseek-r1-distill-llama-70b` (free, but may be slow due to high usage)
        - `qwen2-7b-instruct`
-   - 其次推荐[火山引擎](https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D)，截止2025年8月31日，每天每个模型免费 50w tokens
-     - 生成api后需要手动开通需要开通的模型
-     - 支持的模型较少，只有deepseek系的和doubao系的，比如：
-     - `deepseek-r1-250120` 每天50w tokens
-     - `deepseek-r1-distill-qwen-32b-250120` 每天50w tokens
-     - `deepseek-v3-250324` 每天50w tokens （推荐）
-     - `doubao-1-5-pro-256k-250115` 每天50w tokens
-   - 支持其他兼容openai接口的大模型服务，比如腾讯元宝、Anthropic、硅基流动、DeepSeek等
-   - 本扩展支持本地部署的Ollama，只需要把 protocol 改为 ollama，url 改为`http://localhost:11434/api/generate`即可
-2. 在Git源代码管理视图中，将要提交的文件添加到暂存区
-3. 点击工具栏中的"生成 Commit Message"按钮
-4. 插件会自动分析暂存的代码变更，并生成规范的提交信息
-5. DeepSeek等有推理过程的大模型，会在状态栏显示推理过程
+   - **火山引擎** is also recommended. Until **August 31, 2025**, each model provides **500,000 free tokens per day**
+     - After generating an API key, you must manually enable the required models
+     - Supported models are limited, mainly DeepSeek and Doubao series, for example:
+       - `deepseek-r1-250120` – 500k tokens/day
+       - `deepseek-r1-distill-qwen-32b-250120` – 500k tokens/day
+       - `deepseek-v3-250324` – 500k tokens/day (recommended)
+       - `doubao-1-5-pro-256k-250115` – 500k tokens/day
+   - Other OpenAI-compatible services are supported, such as Tencent Yuanbao, Anthropic, SiliconFlow, and DeepSeek
+   - Local Ollama deployments are supported. Simply set `protocol` to `ollama` and `url` to `http://localhost:11434/api/generate`
 
-## 配置选项
+2. In the Git Source Control view, stage the files you want to commit  
+3. Click the **Generate Commit Message** button in the toolbar  
+4. The extension will analyze the staged changes and generate a standardized commit message  
+5. For models with reasoning capabilities (such as DeepSeek), the reasoning process will be displayed in the status bar  
 
-在VSCode设置中，可以自定义以下配置：
+---
 
-- `llm.prompt`: 生成提交信息的提示词模板
-- `llm.system`: 系统指令
-- `llm.temperature`: 生成结果的随机性（0-1）
-- `llm.top_p`: 采样时的累积概率阈值（0-1）
-- `llm.max_tokens`: 生成结果的最大token数量
-- 各个服务商的不同的url、model、apiKey等参数配置
+## Configuration
 
-## 支持的LLM服务
+You can customize the following settings in VS Code:
 
-- Ollama（本地部署）
-- OpenAI
-- 阿里云百炼
-- 火山引擎
-- Anthropic
-- 腾讯混元
-- DeepSeek
-- SiliconFlow
-- 自定义其他兼容OpenAI接口的服务
+- `llm.prompt`: Prompt template used to generate commit messages  
+- `llm.system`: System instruction  
+- `llm.temperature`: Randomness of the generated result (0–1)  
+- `llm.top_p`: Cumulative probability threshold during sampling (0–1)  
+- `llm.max_tokens`: Maximum number of tokens in the generated result  
+- Provider-specific settings such as `url`, `model`, and `apiKey`
 
-## 贡献
+---
 
-欢迎提交问题和功能请求！如果您想贡献代码，请随时提交PR。
+## Supported LLM Services
 
-## 许可证
+- Ollama (local deployment)  
+- OpenAI  
+- 阿里云百炼  
+- 火山引擎  
+- Anthropic  
+- 腾讯混元  
+- DeepSeek  
+- SiliconFlow  
+- Custom OpenAI-compatible services  
+
+---
+
+## Credits
+
+Commit message format inspired by  
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+
+Based on the original extension by chenkai2  
+Modified and maintained by klaveriuzent
+
+---
+
+## Contributing
+
+Issues and feature requests are welcome!  
+If you’d like to contribute code, feel free to submit a pull request.
+
+---
+
+## License
 
 MIT License
