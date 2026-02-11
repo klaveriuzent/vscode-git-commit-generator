@@ -29,7 +29,7 @@
     "SCM Providers",
     "Other"
   ],
-  "icon": "media/panda-avatar.png",
+  "icon": "media/commit-message-generator.png",
   "activationEvents": [
     "onCommand:git-commit-generator.generateCommitMessage"
   ],

@@ -1,7 +1,7 @@
 # Git Commit Message Generator
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/klaveriuzent/vscode-git-commit-generator/main/media/panda-avatar.png" alt="Git Commit Message Generator Logo" width="128" height="128">
+  <img src="https://raw.githubusercontent.com/klaveriuzent/vscode-git-commit-generator/main/media/commit-message-generator.png" alt="Git Commit Message Generator Logo" width="128" height="128">
 </p>
 
 Generate clear, conventional Git commit messages directly inside VS Code using your preferred AI provider.
