@@ -69,6 +69,7 @@
             "tencent",
             "siliconflow",
             "volcengine",
+            "gemini",
             "custom"
           ],
           "enumDescriptions": [
@@ -80,6 +81,7 @@
             "Tencent Hunyuan",
             "SiliconFlow",
             "Volcengine",
+            "Google Gemini",
             "Custom configuration"
           ],
           "default": "custom",
@@ -345,6 +347,34 @@
           "type": "string",
           "default": "",
           "description": "Volcengine API key"
+        },
+        "vscode-git-commit-message-generator.providers.gemini.url": {
+          "type": "string",
+          "default": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+          "description": "Google Generative Language API URL"
+        },
+        "vscode-git-commit-message-generator.providers.gemini.model": {
+          "type": "string",
+          "enum": [
+            "gemini-2.5-flash",
+            "gemini-2.5-pro",
+            "gemini-2.0-flash"
+          ],
+          "default": "gemini-2.5-flash",
+          "description": "Google Gemini model"
+        },
+        "vscode-git-commit-message-generator.providers.gemini.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Google Gemini API key"
+        },
+        "vscode-git-commit-message-generator.providers.gemini.protocol": {
+          "type": "string",
+          "enum": [
+            "gemini"
+          ],
+          "default": "gemini",
+          "description": "Gemini protocol"
         },
         "vscode-git-commit-message-generator.providers.custom.url": {
           "type": "string",
