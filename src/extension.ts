@@ -296,8 +296,8 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
   }
 
   // Get prompt template and system instruction from configuration
-  const promptTemplate = config.get<string>('llm.prompt') || `Please generate a one-line commit message based on the following Git changes, in the format <type>: <description>: \${diff}`;
-  const system = config.get<string>('llm.system') || `Please describe the main content of this code change in one sentence, in the format <type>: <description>`
+  const promptTemplate = config.get<string>('llm.prompt') || `Generate a commit message from the following changes using the Conventional Commits 1.0.0 specification.\nFiles:\n\${files}\nDiff:\n\${diff}`;
+  const system = config.get<string>('llm.system') || `You are an assistant that writes Git commit messages following Conventional Commits 1.0.0. Use this structure: <type>[optional scope][!]: <description>. Types must be one of: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. Keep the subject concise and imperative. Use lowercase type and scope. Add body and footer only when needed by the changes.`
 
   // Replace template variables
   const prompt = promptTemplate
@@ -701,43 +701,23 @@ async function generateCommitMessage(stagedFiles: string[], diffContent: string,
  * Fallback method for local commit message generation
  */
 function generateLocalCommitMessage(stagedFiles: string[], diffContent: string): string {
-  // Check for newly added files
-  const newFiles = stagedFiles.filter(file => file.startsWith('A '));
-  // Check for modified files
-  const modifiedFiles = stagedFiles.filter(file => file.startsWith('M '));
-  // Check for deleted files
-  const deletedFiles = stagedFiles.filter(file => file.startsWith('D '));
+  const normalizedFiles = stagedFiles.map(file => file.trim());
+  const deletedFiles = normalizedFiles.filter(file => file.includes('(deleted)'));
+  const nonDeletedFiles = normalizedFiles.filter(file => !file.includes('(deleted)'));
+  const hasTestChange = nonDeletedFiles.some(file => file.includes('test') || file.includes('spec'));
+  const hasBugFixSignal = /\b(fix|bug|issue|hotfix|patch)\b/i.test(diffContent);
 
   let prefix = '';
   
   // Determine prefix based on change type
-  if (newFiles.length > 0 && modifiedFiles.length === 0 && deletedFiles.length === 0) {
+  if (deletedFiles.length > 0 && nonDeletedFiles.length === 0) {
+    prefix = 'chore: ';
+  } else if (hasTestChange) {
+    prefix = 'test: ';
+  } else if (hasBugFixSignal) {
+    prefix = 'fix: ';
+  } else if (nonDeletedFiles.length > 0) {
     prefix = 'feat: ';
-  } else if (deletedFiles.length > 0 && newFiles.length === 0 && modifiedFiles.length === 0) {
-    prefix = 'remove: ';
-  } else if (modifiedFiles.length > 0) {
-    // Check whether test files are included
-    const isTestChange = modifiedFiles.some(file => 
-      file.includes('test') || file.includes('spec')
-    );
-    
-    if (isTestChange) {
-      prefix = 'test: ';
-    } else {
-      // Check whether this is a bug fix
-      const isBugFix = diffContent.includes('fix') || 
-                      diffContent.includes('bug') || 
-                      diffContent.includes('issue');
-      
-      if (isBugFix) {
-        prefix = 'fix: ';
-      } else {
-        prefix = 'feat: ';
-      }
-    }
-  } else if (deletedFiles.length > 0) {
-    // If there are deleted files along with other changes, prioritize whether this is a removal operation
-    prefix = 'remove: ';
   } else {
     prefix = 'chore: ';
   }
@@ -745,29 +725,27 @@ function generateLocalCommitMessage(stagedFiles: string[], diffContent: string):
   // Generate a simple description
   let description = '';
   
-  if (stagedFiles.length === 1) {
+  if (normalizedFiles.length === 1) {
     // If there is only one file, use the filename as part of the description
-    const fileName = stagedFiles[0].split(' ').pop() || '';
+    const fileName = normalizedFiles[0].replace(' (deleted)', '').split(' ').pop() || '';
     const fileNameWithoutExt = fileName.split('.').shift() || '';
     
-    if (newFiles.length === 1) {
-      description = `add ${fileNameWithoutExt} feature`;
-    } else if (modifiedFiles.length === 1) {
-      description = `update ${fileNameWithoutExt} feature`;
-    } else if (deletedFiles.length === 1) {
+    if (deletedFiles.length === 1) {
       // Provide a more specific description for deleted files
       description = `remove ${fileNameWithoutExt}`;
+    } else if (hasBugFixSignal) {
+      description = `fix ${fileNameWithoutExt} behavior`;
+    } else {
+      description = `update ${fileNameWithoutExt}`;
     }
   } else {
     // Multiple-file scenario
-    if (newFiles.length > 0 && modifiedFiles.length === 0 && deletedFiles.length === 0) {
-      description = `add new features across ${newFiles.length} files`;
-    } else if (deletedFiles.length > 0 && newFiles.length === 0 && modifiedFiles.length === 0) {
+    if (deletedFiles.length > 0 && nonDeletedFiles.length === 0) {
       description = `remove files, total ${deletedFiles.length}`;
-    } else if (modifiedFiles.length > 0) {
-      description = `update features across ${modifiedFiles.length} files`;
+    } else if (hasBugFixSignal) {
+      description = `resolve issues across ${nonDeletedFiles.length} files`;
     } else {
-      description = `code changes across ${stagedFiles.length} files`;
+      description = `update code across ${normalizedFiles.length} files`;
     }
   }
 

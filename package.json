@@ -372,12 +372,12 @@
         },
         "vscode-git-commit-message-generator.llm.prompt": {
           "type": "string",
-          "default": "Generate a Git commit message from the following changes using the format <type>: <description>.\nFiles:\n${files}\nDiff:\n${diff}",
+          "default": "Generate a Git commit message from the following changes using Conventional Commits 1.0.0.\nFiles:\n${files}\nDiff:\n${diff}",
           "description": "Prompt template for generating commit messages. Supports ${files} and ${diff} variables."
         },
         "vscode-git-commit-message-generator.llm.system": {
           "type": "string",
-          "default": "Use Conventional Commits format: <type>: <description> (max 72 chars). Add a blank line, then concise bullet points summarizing key changes. Keep output in English unless the user explicitly requests another language.",
+          "default": "Follow Conventional Commits 1.0.0 exactly. Use: <type>[optional scope][!]: <description>. Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. Use imperative mood and lowercase type/scope. Add body/footer only when needed.",
           "description": "System instruction for commit message generation"
         },
         "vscode-git-commit-message-generator.llm.temperature": {
