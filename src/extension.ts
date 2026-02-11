@@ -7,127 +7,127 @@ import * as url from 'url';
 export function activate(context: vscode.ExtensionContext) {
   console.log('[EXTENSION] vscode-git-commit-message-generator activated');
 
-  // 注册命令
+  // Register command
   const disposable = vscode.commands.registerCommand('vscode-git-commit-message-generator.generateCommitMessage', async (sourceControl) => {
     try {
-      // 获取Git扩展
+      // Get Git extension
       const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports;
       if (!gitExtension) {
-        vscode.window.showErrorMessage('无法获取Git扩展');
+        vscode.window.showErrorMessage('Unable to get Git extension');
         return;
       }
 
       const api = gitExtension.getAPI(1);
       if (!api) {
-        vscode.window.showErrorMessage('无法获取Git API');
+        vscode.window.showErrorMessage('Unable to get Git API');
         return;
       }
 
-      // 获取当前点击的Git源
+      // Get the currently selected Git source
       const repository = sourceControl?.rootUri
         ? api.repositories.find((repo: { rootUri: { fsPath: string } }) => repo.rootUri.fsPath === sourceControl.rootUri.fsPath)
         : api.repositories[0];
 
       if (!repository) {
-        vscode.window.showErrorMessage('无法获取Git仓库');
+        vscode.window.showErrorMessage('Unable to get Git repository');
         return;
       }
 
       const rootPath = repository.rootUri.fsPath;
       const git: SimpleGit = simpleGit(rootPath);
 
-      // 检查是否有staged文件
+      // Check whether there are staged files
       const status = await git.status();
       if (status.staged.length === 0) {
-        vscode.window.showWarningMessage('没有暂存的文件，请先添加文件到暂存区');
+        vscode.window.showWarningMessage('No staged files found. Please stage files first.');
         return;
       }
 
-      // 创建状态栏消息
+      // Create status bar message
       const statusBarMessage = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-      // 获取暂存区的文件变更
+      // Get staged file changes
       const stagedFiles = status.staged;
-      statusBarMessage.text = `找到 ${stagedFiles.length} 个暂存的文件`;
+      statusBarMessage.text = `Found ${stagedFiles.length} staged files`;
       context.subscriptions.push(statusBarMessage);
       statusBarMessage.show();
 
-      // 获取每个文件的diff
+      // Get diff for each file
       let allDiffs = '';
-      // 分类文件 - 使用status.deleted和status.staged的交集确定删除文件
+      // Classify files - identify deleted files by intersecting status.deleted and status.staged
       const deletedFiles = stagedFiles.filter(file => status.deleted.includes(file));
-      // 其他文件是staged文件减去deletedFiles
+      // Other files are staged files excluding deletedFiles
       const otherFiles = stagedFiles.filter(file => !deletedFiles.includes(file));
       
-      // 处理非删除文件
+      // Process non-deleted files
       for (const file of otherFiles) {
         try {
           const diff = await git.diff(['--cached', file]);
-          allDiffs += `\n文件: ${file}\n${diff}\n`;
+          allDiffs += `\nFile: ${file}\n${diff}\n`;
         } catch (error) {
-          console.error(`获取文件 ${file} 的diff失败:`, error);
+          console.error(`Failed to get diff for file ${file}:`, error);
         }
       }
       
-      // 特殊处理删除的文件
+      // Special handling for deleted files
       for (const file of deletedFiles) {
         try {
-          // 尝试获取删除文件的基本信息
+          // Try to get basic information for deleted file
           const fileName = file || '';
-          // 尝试获取文件的最后一次提交信息，了解文件的用途
+          // Try to get the file's latest commit message to understand its purpose
           let fileInfo = '';
           let fileContent = '';
           try {
-            // 获取文件的最后一次提交日志
+            // Get the latest commit log for the file
             const log = await git.log({ file: fileName, maxCount: 1 });
             if (log.all.length > 0) {
               const lastCommit = log.all[0];
-              fileInfo = `\n该文件最后一次提交信息: ${lastCommit.message}\n`;
+              fileInfo = `\nLast commit message for this file: ${lastCommit.message}\n`;
               
-              // 尝试获取文件在最后一次提交前的内容
+              // Try to get file content from the latest commit
               try {
-                // 使用git show命令获取文件的历史版本内容
+                // Use git show to get historical file content
                 const fileHistoryContent = await git.raw(['show', `${lastCommit.hash}:${fileName}`]);
                 if (fileHistoryContent) {
-                  // 限制文件内容长度，避免过大
-                  const maxContentLength = 300; // 最多300个字符
+                  // Limit file content length to avoid oversized payloads
+                  const maxContentLength = 300; // Up to 300 characters
                   const lines = fileHistoryContent.split('\n');
-                  const first15Lines = lines.slice(0, 15).join('\n'); // 最多取15行
+                  const first15Lines = lines.slice(0, 15).join('\n'); // Up to 15 lines
                   
-                  // 同时满足字符数和行数限制
+                  // Enforce both character and line limits
                   let truncatedContent = first15Lines;
                   if (truncatedContent.length > maxContentLength) {
-                    truncatedContent = truncatedContent.substring(0, maxContentLength) + '\n... (内容过长已截断)';
+                    truncatedContent = truncatedContent.substring(0, maxContentLength) + '\n... (content too long, truncated)';
                   } else if (lines.length > 15) {
-                    truncatedContent += '\n... (只显示前15行)';
+                    truncatedContent += '\n... (showing only the first 15 lines)';
                   }
                   
-                  fileContent = `\n该文件删除的内容:\n\`\`\`\n${truncatedContent}\n\`\`\`\n`;
+                  fileContent = `\nDeleted content from this file:\n\`\`\`\n${truncatedContent}\n\`\`\`\n`;
                 }
               } catch (showError) {
-                console.log(`获取文件 ${fileName} 的历史内容失败:`, showError);
+                console.log(`Failed to get historical content for file ${fileName}:`, showError);
               }
             }
           } catch (logError) {
-            console.log(`获取文件 ${fileName} 的提交历史失败:`, logError);
+            console.log(`Failed to get commit history for file ${fileName}:`, logError);
           }
           
-          // 添加删除文件的上下文信息
-          allDiffs += `\n已删除的文件: ${file} ${fileInfo}${fileContent}\n`;
+          // Add context information for deleted files
+          allDiffs += `\nDeleted file: ${file} ${fileInfo}${fileContent}\n`;
         } catch (error) {
-          console.error(`获取删除文件 ${file} 的信息失败:`, error);
-          // 即使获取失败，也添加基本信息
-          allDiffs += `\n文件: ${file} (已删除，无法获取更多信息)\n`;
+          console.error(`Failed to get information for deleted file ${file}:`, error);
+          // Add basic information even if retrieval fails
+          allDiffs += `\nFile: ${file} (deleted, unable to retrieve more information)\n`;
         }
       }
 
-      statusBarMessage.text = 'AI正在生成commit message...';
+      statusBarMessage.text = 'AI is generating commit message...';
 
       let commitMessage = '';
       try {
-        // 根据变更内容生成commit message
-        // 为已删除文件添加后缀
+        // Generate commit message based on changes
+        // Add suffix for deleted files
         const markedFiles = stagedFiles.map(file => 
-          deletedFiles.includes(file) ? `${file}（已删除）` : file
+          deletedFiles.includes(file) ? `${file} (deleted)` : file
         );
         commitMessage = await generateCommitMessage(markedFiles, allDiffs, repository.inputBox, statusBarMessage);
         statusBarMessage.dispose();
@@ -136,12 +136,12 @@ export function activate(context: vscode.ExtensionContext) {
         throw error;
       }
 
-      // 设置最终的commit message
+      // Set final commit message
       repository.inputBox.value = commitMessage;
-      statusBarMessage.text = '已设置commit message';
+      statusBarMessage.text = 'Commit message set';
     } catch (error) {
-      console.error('生成commit message时出错:', error);
-      vscode.window.showErrorMessage(`生成commit message失败: ${error}`);
+      console.error('Error generating commit message:', error);
+      vscode.window.showErrorMessage(`Failed to generate commit message: ${error}`);
     }
   });
 
@@ -149,7 +149,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 /**
- * 调用LLM API生成commit message
+ * Call LLM API to generate commit message
  */
 async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: any, statusBarMessage: vscode.StatusBarItem): Promise<string> {
   const modelServices = [
@@ -235,7 +235,7 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
       AuthKey: 'Authorization'
     }
   ];
-  // 获取配置
+  // Get configuration
   const config = vscode.workspace.getConfiguration('vscode-git-commit-message-generator');
   const provider = config.get<string>('llm.provider') || 'aliyun';
   let apiUrl = '';
@@ -259,20 +259,20 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
         config.update(`providers.${provider}.apiKey`, oldApiKey, vscode.ConfigurationTarget.Global);
         config.update(`providers.${provider}.model`, oldModel, vscode.ConfigurationTarget.Global);
       } catch (error) {
-        console.error('更新配置失败:', error);
-        vscode.window.showErrorMessage(`同步 ${provider} 配置失败: ${error}`);
+        console.error('Failed to update configuration:', error);
+        vscode.window.showErrorMessage(`Failed to sync ${provider} configuration: ${error}`);
       }
     }
     model = config.get<string>(`providers.${provider}.model`) || oldModel || '';
     protocol = config.get<string>(`providers.${provider}.protocol`) || oldProtocol || 'openai';
     apiKey = config.get<string>(`providers.${provider}.apiKey`) || oldApiKey || '';
   } else {
-    // 获取提供商的预设配置
+    // Get provider preset configuration
     const providerPresets = getProviderPresets();
     const preset = providerPresets[provider];
 
     if (!preset) {
-      console.warn(`未找到提供商 ${provider} 的预设配置`);
+      console.warn(`Provider preset configuration not found for ${provider}`);
     }
     apiUrl = config.get<string>(`providers.${provider}.url`) || preset?.url || '';
     model = config.get<string>(`providers.${provider}.model`) || preset?.model || '';
@@ -280,24 +280,24 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
     apiKey = config.get<string>(`providers.${provider}.apiKey`) || '';
   }
 
-  // 从配置中获取提示词模板和系统指令
-  const promptTemplate = config.get<string>('llm.prompt') || `请根据以下Git变更生成一句话提交信息，格式为<type>: <description>：\${diff}`;
-  const system = config.get<string>('llm.system') || `请用一句话描述这次代码变更的主要内容，格式为<type>: <description>`
+  // Get prompt template and system instruction from configuration
+  const promptTemplate = config.get<string>('llm.prompt') || `Please generate a one-line commit message based on the following Git changes, in the format <type>: <description>: \${diff}`;
+  const system = config.get<string>('llm.system') || `Please describe the main content of this code change in one sentence, in the format <type>: <description>`
 
-  // 替换模板变量
+  // Replace template variables
   const prompt = promptTemplate
     .replace(/\$\{files\}/g, stagedFiles.join('\n'))
     .replace(/\$\{diff\}/g, diffContent);
 
-  // 解析URL（更健壮地处理用户自定义端点）
+  // Parse URL (more robust handling for custom user endpoints)
   if (!apiUrl) {
-    console.warn(`[committer] llm apiUrl 为空，provider=${provider}，请检查扩展配置`);
+    console.warn(`[committer] llm apiUrl is empty, provider=${provider}, please check extension configuration`);
   }
   const parsedUrl = url.parse(apiUrl || '');
   const isHttps = parsedUrl.protocol === 'https:';
   const parsedHostname = parsedUrl.hostname || '';
 
-  // 获取匹配的服务配置（先尝试用解析到的hostname查找）
+  // Get matching service config (first try parsed hostname)
   let serviceConfig = modelServices.find(service => service.hostname === parsedHostname);
   if (!serviceConfig) {
     let serviceName = '';
@@ -313,20 +313,20 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
     serviceConfig = modelServices.find(service => service.name === serviceName);
   }
   if (!serviceConfig) {
-    throw new Error(`未找到匹配的LLM服务配置: ${parsedHostname || apiUrl}`);
+    throw new Error(`No matching LLM service configuration found: ${parsedHostname || apiUrl}`);
   }
 
-  // 最终使用解析到的hostname，若为空则回退到serviceConfig中的hostname
+  // Use parsed hostname as final value; fallback to serviceConfig hostname when empty
   const hostname = parsedHostname || serviceConfig.hostname || 'localhost';
   const port = parsedUrl.port ? parseInt(parsedUrl.port, 10) : (isHttps ? 443 : 80);
 
-  // 计算请求的 path，避免重复拼接或丢失斜杠
+  // Compute request path to avoid duplicate concatenation or missing slash
   const basePath = parsedUrl.pathname || parsedUrl.path || '';
   const suffix = serviceConfig.apiSuffix || '';
   let path = basePath || '';
   if (suffix) {
     if (!path.endsWith(suffix)) {
-      // 处理斜杠，确保不会出现 // 或 缺少 /
+      // Handle slashes to avoid // or missing /
       if (path.endsWith('/') && suffix.startsWith('/')) {
         path = path.slice(0, -1) + suffix;
       } else if (!path.endsWith('/') && !suffix.startsWith('/')) {
@@ -464,7 +464,7 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
   
   console.log('[committer] requestData:', requestData);
 
-  // 创建请求选项
+  // Create request options
   const options = {
     hostname: hostname,
     port: port,
@@ -482,10 +482,10 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
     }
   }
   const optionsStr = JSON.stringify(options);
-  console.log(`[committer]调用LLM API请求: ${optionsStr}`+'\n');
+  console.log(`[committer] LLM API request: ${optionsStr}`+'\n');
 
   return new Promise((resolve, reject) => {
-    // 选择http或https模块
+    // Choose http or https module
     const requester = isHttps ? https : http;
     
     const req = requester.request(options, (res) => {
@@ -499,7 +499,7 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
         
         for (const line of lines) {
           try {
-            // 去除JSON字符串前的所有字符，只保留从{开始的部分
+            // Strip all characters before the JSON object and keep only content from {
             const jsonStartIndex = line.indexOf('{');
             if (jsonStartIndex === -1) {
               continue;
@@ -508,13 +508,13 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
             const response = JSON.parse(jsonStr);
             
             if (!serviceConfig) {
-              throw new Error('未找到匹配的LLM服务配置');
+              throw new Error('No matching LLM service configuration found');
             }
             
             switch (serviceConfig.protocol) {
               case "openai":
                 if (response.choices){
-                  // 处理流式delta（已有逻辑）
+                  // Handle streaming delta (existing logic)
                   if(response.choices[0]?.delta?.content) {
                     let content = response.choices[0].delta.content;
                     if (isThinking) {
@@ -558,10 +558,10 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
                     statusBarMessage.show();
                   }
 
-                  // 处理非流式（一次性）响应：OpenAI Chat Completions 或 Completions
+                  // Handle non-streaming (single response) output: OpenAI Chat Completions or Completions
                   const choice = response.choices[0];
                   if (choice) {
-                    // Chat completion: message.content 可能为字符串或对象（含 parts）
+                    // Chat completion: message.content may be a string or object (with parts)
                     let fullContent = '';
                     if (choice.message && choice.message.content) {
                       const mc = choice.message.content as any;
@@ -577,12 +577,12 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
                         }
                       }
                     } else if (choice.text) {
-                      // Completion API 返回的 text 字段
+                      // text field returned by Completion API
                       fullContent = choice.text as string;
                     }
 
                     if (fullContent) {
-                      // 清理代码块并处理 <think> 标签（与流式逻辑保持一致）
+                      // Clean code blocks and handle <think> tags (consistent with streaming logic)
                       fullContent = fullContent.replace(/^```[a-z0-9]+\n/g, '').replace(/```/g, '');
                       if (fullContent.match(/^<think>/)) {
                         generatedThinking = fullContent.replace(/^<think>/, '');
@@ -640,8 +640,8 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
                 break;
             }
           } catch (error) {
-            // 如果解析JSON失败，可能是因为接收到了不完整的数据块
-            console.log('解析数据块失败，跳过:', error);
+            // If JSON parsing fails, it may be due to receiving an incomplete data chunk
+            console.log('Failed to parse data chunk, skipped:', error);
           }
         }
       });
@@ -650,58 +650,58 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
         if (generatedText) {
           resolve(generatedText.trim().replace(/^```[a-zA-Z0-9]*\n|```/g, ''));
         } else {
-          reject(new Error('未收到有效的响应数据'));
+          reject(new Error('No valid response data received'));
         }
       });
     });
     
     req.on('error', (error) => {
-      reject(new Error(`API请求错误: ${error.message}`));
+      reject(new Error(`API request error: ${error.message}`));
     });
     
-    // 发送请求数据
+    // Send request payload
     req.write(JSON.stringify(requestData));
     req.end();
   });
 }
 
 /**
- * 根据暂存文件和diff内容生成commit message
+ * Generate commit message from staged files and diff content
  */
 async function generateCommitMessage(stagedFiles: string[], diffContent: string, inputBox: any, statusBarMessage: vscode.StatusBarItem): Promise<string> {
   try {
-    // 调用LLM API生成commit message
+    // Call LLM API to generate commit message
     return await callLLMAPI(stagedFiles, diffContent, inputBox, statusBarMessage);
   } catch (error) {
-    console.error('调用LLM API失败:', error);
+    console.error('Failed to call LLM API:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    vscode.window.showErrorMessage(`调用LLM API失败: ${errorMessage}`);
+    vscode.window.showErrorMessage(`Failed to call LLM API: ${errorMessage}`);
     
-    // 如果API调用失败，回退到本地生成逻辑
+    // If API call fails, fallback to local generation logic
     return generateLocalCommitMessage(stagedFiles, diffContent);
   }
 }
 
 /**
- * 本地生成commit message的备用方法
+ * Fallback method for local commit message generation
  */
 function generateLocalCommitMessage(stagedFiles: string[], diffContent: string): string {
-  // 检查是否有新增文件
+  // Check for newly added files
   const newFiles = stagedFiles.filter(file => file.startsWith('A '));
-  // 检查是否有修改文件
+  // Check for modified files
   const modifiedFiles = stagedFiles.filter(file => file.startsWith('M '));
-  // 检查是否有删除文件
+  // Check for deleted files
   const deletedFiles = stagedFiles.filter(file => file.startsWith('D '));
 
   let prefix = '';
   
-  // 根据变更类型确定前缀
+  // Determine prefix based on change type
   if (newFiles.length > 0 && modifiedFiles.length === 0 && deletedFiles.length === 0) {
     prefix = 'feat: ';
   } else if (deletedFiles.length > 0 && newFiles.length === 0 && modifiedFiles.length === 0) {
     prefix = 'remove: ';
   } else if (modifiedFiles.length > 0) {
-    // 检查是否包含测试文件
+    // Check whether test files are included
     const isTestChange = modifiedFiles.some(file => 
       file.includes('test') || file.includes('spec')
     );
@@ -709,7 +709,7 @@ function generateLocalCommitMessage(stagedFiles: string[], diffContent: string):
     if (isTestChange) {
       prefix = 'test: ';
     } else {
-      // 检查是否是bug修复
+      // Check whether this is a bug fix
       const isBugFix = diffContent.includes('fix') || 
                       diffContent.includes('bug') || 
                       diffContent.includes('issue');
@@ -721,38 +721,38 @@ function generateLocalCommitMessage(stagedFiles: string[], diffContent: string):
       }
     }
   } else if (deletedFiles.length > 0) {
-    // 如果有删除文件但同时有其他类型的变更，优先考虑是否为删除操作
+    // If there are deleted files along with other changes, prioritize whether this is a removal operation
     prefix = 'remove: ';
   } else {
     prefix = 'chore: ';
   }
 
-  // 生成简单的描述
+  // Generate a simple description
   let description = '';
   
   if (stagedFiles.length === 1) {
-    // 如果只有一个文件，使用文件名作为描述的一部分
+    // If there is only one file, use the filename as part of the description
     const fileName = stagedFiles[0].split(' ').pop() || '';
     const fileNameWithoutExt = fileName.split('.').shift() || '';
     
     if (newFiles.length === 1) {
-      description = `添加${fileNameWithoutExt}功能`;
+      description = `add ${fileNameWithoutExt} feature`;
     } else if (modifiedFiles.length === 1) {
-      description = `更新${fileNameWithoutExt}功能`;
+      description = `update ${fileNameWithoutExt} feature`;
     } else if (deletedFiles.length === 1) {
-      // 对删除文件提供更具体的描述
-      description = `删除${fileNameWithoutExt}`;
+      // Provide a more specific description for deleted files
+      description = `remove ${fileNameWithoutExt}`;
     }
   } else {
-    // 多个文件的情况
+    // Multiple-file scenario
     if (newFiles.length > 0 && modifiedFiles.length === 0 && deletedFiles.length === 0) {
-      description = `添加新功能，涉及${newFiles.length}个文件`;
+      description = `add new features across ${newFiles.length} files`;
     } else if (deletedFiles.length > 0 && newFiles.length === 0 && modifiedFiles.length === 0) {
-      description = `删除文件，共${deletedFiles.length}个`;
+      description = `remove files, total ${deletedFiles.length}`;
     } else if (modifiedFiles.length > 0) {
-      description = `更新功能，涉及${modifiedFiles.length}个文件`;
+      description = `update features across ${modifiedFiles.length} files`;
     } else {
-      description = `代码变更，涉及${stagedFiles.length}个文件`;
+      description = `code changes across ${stagedFiles.length} files`;
     }
   }
 
@@ -760,7 +760,7 @@ function generateLocalCommitMessage(stagedFiles: string[], diffContent: string):
 }
 
 /**
- * 获取各个提供商的预设配置
+ * Get preset configurations for each provider
  */
 function getProviderPresets(): Record<string, any> {
   return {
