@@ -1,8 +1,8 @@
 {
   "name": "git-commit-message-generator",
-  "displayName": "Git Commit Message Generator",
+  "displayName": "VSCode Commit Generator",
   "description": "Making Git commits smarter and more efficient.",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "publisher": "Klaveriuzent",
   "author": {
     "name": "klaveriuzent",
