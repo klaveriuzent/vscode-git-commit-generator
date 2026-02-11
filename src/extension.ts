@@ -37,10 +37,25 @@ export function activate(context: vscode.ExtensionContext) {
       const git: SimpleGit = simpleGit(rootPath);
 
       // Check whether there are staged files
-      const status = await git.status();
+      let status = await git.status();
       if (status.staged.length === 0) {
-        vscode.window.showWarningMessage('No staged files found. Please stage files first.');
-        return;
+        const hasWorkingTreeChanges = status.files.length > 0;
+        const action = hasWorkingTreeChanges
+          ? await vscode.window.showWarningMessage(
+              'No staged files found. Stage your changes before generating a commit message.',
+              'Stage All and Retry'
+            )
+          : undefined;
+
+        if (action === 'Stage All and Retry') {
+          await git.add(['.']);
+          status = await git.status();
+        }
+
+        if (status.staged.length === 0) {
+          vscode.window.showWarningMessage('No staged files found. Please stage files first.');
+          return;
+        }
       }
 
       // Create status bar message

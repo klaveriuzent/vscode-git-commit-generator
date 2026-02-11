@@ -27,6 +27,38 @@ A powerful Git commit message generator that uses AI models to automatically ana
 
 ---
 
+
+## Troubleshooting
+
+### `Extension 'chenkai2.vscode-git-commit-message-generator' not found.`
+
+This message usually means VS Code cannot find the extension in the current registry (for example, it may not be available in your Marketplace region or is only published as a VSIX/Open VSX package).
+
+Try one of these options:
+
+1. Install from a packaged release (`.vsix`) if available:
+   - `code --install-extension <path-to-vsix-file>`
+2. If you use VSCodium/Open VSX, install from Open VSX:
+   - `ovsx install chenkai2.vscode-git-commit-message-generator`
+3. Verify the extension ID and source registry in your environment before retrying.
+
+### `没有暂存的文件，请先添加文件到暂存区`
+
+This warning appears when no staged changes are detected in the current repository.
+
+To fix it:
+
+1. Stage specific files from Source Control (`+` button), then run **Generate Commit Message** again.
+2. Or stage everything from terminal:
+   - `git add .`
+3. In the latest version, the extension also provides **Stage All and Retry** when it detects unstaged changes.
+
+### Why commit messages may appear in Chinese
+
+Older versions used Chinese defaults for `llm.prompt` and `llm.system`, so generated messages could be in Chinese even when your IDE is in English.
+
+Use the latest version, or override these settings in VS Code to enforce English output.
+
 ## Usage
 
 1. Configure your AI service API settings in VS Code

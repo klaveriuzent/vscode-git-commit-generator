@@ -72,15 +72,15 @@
             "custom"
           ],
           "enumDescriptions": [
-            "阿里云百炼",
+            "Alibaba Bailian",
             "OpenAI",
-            "Ollama本地部署",
+            "Ollama (local deployment)",
             "DeepSeek",
             "Anthropic Claude",
-            "腾讯混元",
-            "硅基流动",
-            "火山引擎",
-            "自定义配置"
+            "Tencent Hunyuan",
+            "SiliconFlow",
+            "Volcengine",
+            "Custom configuration"
           ],
           "default": "custom",
           "description": "Choose LLM service provider"
@@ -88,7 +88,7 @@
         "vscode-git-commit-message-generator.providers.aliyun.url": {
           "type": "string",
           "default": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-          "description": "阿里云百炼API地址"
+          "description": "Alibaba Bailian API URL"
         },
         "vscode-git-commit-message-generator.providers.aliyun.model": {
           "type": "string",
@@ -145,17 +145,17 @@
             "qwq-plus"
           ],
           "default": "deepseek-v3.2",
-          "description": "阿里云百炼模型"
+          "description": "Alibaba Bailian model"
         },
         "vscode-git-commit-message-generator.providers.aliyun.apiKey": {
           "type": "string",
           "default": "",
-          "description": "阿里云百炼API密钥"
+          "description": "Alibaba Bailian API key"
         },
         "vscode-git-commit-message-generator.providers.openai.url": {
           "type": "string",
           "default": "https://api.openai.com/v1/chat/completions",
-          "description": "OpenAI API地址"
+          "description": "OpenAI API URL"
         },
         "vscode-git-commit-message-generator.providers.openai.model": {
           "type": "string",
@@ -180,27 +180,27 @@
             "o1-mini"
           ],
           "default": "gpt-5-mini",
-          "description": "OpenAI模型"
+          "description": "OpenAI model"
         },
         "vscode-git-commit-message-generator.providers.openai.apiKey": {
           "type": "string",
           "default": "",
-          "description": "OpenAI API密钥"
+          "description": "OpenAI API key"
         },
         "vscode-git-commit-message-generator.providers.ollama.url": {
           "type": "string",
           "default": "http://localhost:11434/api/generate",
-          "description": "Ollama API地址"
+          "description": "Ollama API URL"
         },
         "vscode-git-commit-message-generator.providers.ollama.model": {
           "type": "string",
           "default": "deepseek-r1:7b",
-          "description": "Ollama模型名称"
+          "description": "Ollama model name"
         },
         "vscode-git-commit-message-generator.providers.ollama.apiKey": {
           "type": "string",
           "default": "",
-          "description": "Ollama API密钥"
+          "description": "Ollama API key"
         },
         "vscode-git-commit-message-generator.providers.ollama.protocol": {
           "type": "string",
@@ -209,12 +209,12 @@
             "ollama"
           ],
           "default": "ollama",
-          "description": "Ollama接口协议"
+          "description": "Ollama protocol"
         },
         "vscode-git-commit-message-generator.providers.deepseek.url": {
           "type": "string",
           "default": "https://api.deepseek.com/v1/chat/completions",
-          "description": "DeepSeek API地址"
+          "description": "DeepSeek API URL"
         },
         "vscode-git-commit-message-generator.providers.deepseek.model": {
           "type": "string",
@@ -223,17 +223,17 @@
             "deepseek-reasoner"
           ],
           "default": "deepseek-chat",
-          "description": "DeepSeek模型"
+          "description": "DeepSeek model"
         },
         "vscode-git-commit-message-generator.providers.deepseek.apiKey": {
           "type": "string",
           "default": "",
-          "description": "DeepSeek API密钥"
+          "description": "DeepSeek API key"
         },
         "vscode-git-commit-message-generator.providers.anthropic.url": {
           "type": "string",
           "default": "https://api.anthropic.com/v1/messages",
-          "description": "Anthropic API地址"
+          "description": "Anthropic API URL"
         },
         "vscode-git-commit-message-generator.providers.anthropic.model": {
           "type": "string",
@@ -257,17 +257,17 @@
             "claude-sonnet-4-20250514"
           ],
           "default": "claude-sonnet-4-5",
-          "description": "Anthropic模型"
+          "description": "Anthropic model"
         },
         "vscode-git-commit-message-generator.providers.anthropic.apiKey": {
           "type": "string",
           "default": "",
-          "description": "Anthropic API密钥"
+          "description": "Anthropic API key"
         },
         "vscode-git-commit-message-generator.providers.tencent.url": {
           "type": "string",
           "default": "https://api.hunyuan.cloud.tencent.com/v1/chat/completions",
-          "description": "腾讯混元API地址"
+          "description": "Tencent Hunyuan API URL"
         },
         "vscode-git-commit-message-generator.providers.tencent.model": {
           "type": "string",
@@ -290,32 +290,32 @@
             "hunyuan-t1-20250403"
           ],
           "default": "hunyuan-2.0-instruct-20251111",
-          "description": "腾讯混元模型"
+          "description": "Tencent Hunyuan model"
         },
         "vscode-git-commit-message-generator.providers.tencent.apiKey": {
           "type": "string",
           "default": "",
-          "description": "腾讯混元API密钥"
+          "description": "Tencent Hunyuan API key"
         },
         "vscode-git-commit-message-generator.providers.siliconflow.url": {
           "type": "string",
           "default": "https://api.siliconflow.cn/v1/chat/completions",
-          "description": "硅基流动API地址"
+          "description": "SiliconFlow API URL"
         },
         "vscode-git-commit-message-generator.providers.siliconflow.model": {
           "type": "string",
           "default": "THUDM/glm-4-9b-chat",
-          "description": "硅基流动模型"
+          "description": "SiliconFlow model"
         },
         "vscode-git-commit-message-generator.providers.siliconflow.apiKey": {
           "type": "string",
           "default": "",
-          "description": "硅基流动API密钥"
+          "description": "SiliconFlow API key"
         },
         "vscode-git-commit-message-generator.providers.volcengine.url": {
           "type": "string",
           "default": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
-          "description": "火山引擎API地址"
+          "description": "Volcengine API URL"
         },
         "vscode-git-commit-message-generator.providers.volcengine.model": {
           "type": "string",
@@ -339,27 +339,27 @@
             "doubao-1-5-thinking-pro-250415"
           ],
           "default": "deepseek-v3-2-251201",
-          "description": "火山引擎模型"
+          "description": "Volcengine model"
         },
         "vscode-git-commit-message-generator.providers.volcengine.apiKey": {
           "type": "string",
           "default": "",
-          "description": "火山引擎API密钥"
+          "description": "Volcengine API key"
         },
         "vscode-git-commit-message-generator.providers.custom.url": {
           "type": "string",
           "default": "",
-          "description": "自定义API地址"
+          "description": "Custom API URL"
         },
         "vscode-git-commit-message-generator.providers.custom.model": {
           "type": "string",
           "default": "",
-          "description": "自定义模型"
+          "description": "Custom model"
         },
         "vscode-git-commit-message-generator.providers.custom.apiKey": {
           "type": "string",
           "default": "",
-          "description": "自定义API密钥"
+          "description": "Custom API key"
         },
         "vscode-git-commit-message-generator.providers.custom.protocol": {
           "type": "string",
@@ -368,38 +368,38 @@
             "ollama"
           ],
           "default": "openai",
-          "description": "自定义接口协议"
+          "description": "Custom protocol"
         },
         "vscode-git-commit-message-generator.llm.prompt": {
           "type": "string",
-          "default": "根据以下Git变更生成Git提交信息，格式为 <type>: <description>。\n文件：${files}\n变更内容：${diff}",
-          "description": "生成提交信息的提示词模板，支持${files}和${diff}变量"
+          "default": "Generate a Git commit message from the following changes using the format <type>: <description>.\nFiles:\n${files}\nDiff:\n${diff}",
+          "description": "Prompt template for generating commit messages. Supports ${files} and ${diff} variables."
         },
         "vscode-git-commit-message-generator.llm.system": {
           "type": "string",
-          "default": "标题行格式为 <type>: <description>，字数不要超过50个，description如果不是中文，则翻译成中文。两个换行后，输出正文内容，每个要点作为一个符号列表，不超过70个字。type使用英文，description和正文用中文，如果不是，则翻译成中文。要点简洁清晰。",
-          "description": "生成提交信息的系统指令"
+          "default": "Use Conventional Commits format: <type>: <description> (max 72 chars). Add a blank line, then concise bullet points summarizing key changes. Keep output in English unless the user explicitly requests another language.",
+          "description": "System instruction for commit message generation"
         },
         "vscode-git-commit-message-generator.llm.temperature": {
           "type": "number",
           "default": 0.7,
           "minimum": 0,
           "maximum": 1,
-          "description": "LLM生成结果的温度参数，值越高生成结果越随机"
+          "description": "Temperature parameter for LLM output; higher values produce more random results"
         },
         "vscode-git-commit-message-generator.llm.top_p": {
           "type": "number",
           "default": 0.9,
           "minimum": 0,
           "maximum": 1,
-          "description": "LLM生成结果的top_p参数，控制采样时的累积概率阈值"
+          "description": "Top-p parameter for LLM output; controls cumulative probability during sampling"
         },
         "vscode-git-commit-message-generator.llm.max_tokens": {
           "type": "number",
           "default": 2048,
           "minimum": 1,
           "maximum": 8192,
-          "description": "LLM生成结果的最大token数量"
+          "description": "Maximum token count for LLM output"
         }
       }
     }
