@@ -8,7 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('[EXTENSION] vscode-git-commit-message-generator activated');
 
   // 注册命令
-  let disposable = vscode.commands.registerCommand('vscode-git-commit-message-generator.generateCommitMessage', async (sourceControl) => {
+  const disposable = vscode.commands.registerCommand('vscode-git-commit-message-generator.generateCommitMessage', async (sourceControl) => {
     try {
       // 获取Git扩展
       const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports;
@@ -238,10 +238,10 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
   // 获取配置
   const config = vscode.workspace.getConfiguration('vscode-git-commit-message-generator');
   const provider = config.get<string>('llm.provider') || 'aliyun';
-  var apiUrl = '';
-  var model = '';
-  var apiKey = '';
-  var protocol = 'openai';
+  let apiUrl = '';
+  let model = '';
+  let apiKey = '';
+  let protocol = 'openai';
   const temperature = config.get<number>('llm.temperature') || 0.7;
   const topP = config.get<number>('llm.top_p') || 1;
   const maxTokens = config.get<number>('llm.max_tokens') || 2048;
@@ -481,7 +481,7 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
       options.headers[authKey] = options.headers[authKey] + apiKey;
     }
   }
-  let optionsStr = JSON.stringify(options);
+  const optionsStr = JSON.stringify(options);
   console.log(`[committer]调用LLM API请求: ${optionsStr}`+'\n');
 
   return new Promise((resolve, reject) => {
@@ -489,7 +489,6 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
     const requester = isHttps ? https : http;
     
     const req = requester.request(options, (res) => {
-      let data = '';
       
       let generatedText = '';
       let generatedThinking = '';
