@@ -1,9 +1,9 @@
 {
-  "name": "vscode-git-commit-message-generator",
+  "name": "git-commit-message-generator",
   "displayName": "Git Commit Message Generator",
   "description": "Making Git commits smarter and more efficient.",
   "version": "0.1.6",
-  "publisher": "chenkai2",
+  "publisher": "Klaveriuzent",
   "author": {
     "name": "klaveriuzent",
     "url": "https://github.com/klaveriuzent"
@@ -400,14 +400,14 @@
           "default": "openai",
           "description": "Custom protocol"
         },
-        "git-commit-generator.llm.prompt": {
+        "git-commit-message-generator.llm.prompt": {
           "type": "string",
-          "default": "Generate a Git commit message from the following changes using Conventional Commits 1.0.0.\nFiles:\n${files}\nDiff:\n${diff}",
+          "default": "Generate a single Git commit message based on the following changes.\n\nFiles:\n${files}\n\nDiff:\n${diff}",
           "description": "Prompt template for generating commit messages. Supports ${files} and ${diff} variables."
         },
-        "git-commit-generator.llm.system": {
+        "git-commit-message-generator.llm.system": {
           "type": "string",
-          "default": "Follow Conventional Commits 1.0.0 exactly. Use: <type>[optional scope][!]: <description>. Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. Use imperative mood and lowercase type/scope. Add body/footer only when needed.",
+          "default": "Follow Conventional Commits 1.0.0 strictly.\n\nFormat:\n<type>[optional scope][!]: <description>\n\nRules:\n- Output ONLY the commit message\n- Do not include explanations or code blocks\n- Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert\n- Use lowercase for type and scope\n- Use imperative mood (e.g., \"add\" not \"added\")\n- Do not end description with a period\n- Limit header to 72 characters\n- Generate a single commit message only\n- Add body or footer only if necessary\n- Use BREAKING CHANGE footer when required",
           "description": "System instruction for commit message generation"
         },
         "git-commit-generator.llm.temperature": {
