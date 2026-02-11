@@ -4,132 +4,245 @@
   <img src="https://raw.githubusercontent.com/klaveriuzent/vscode-git-commit-generator/main/media/panda-avatar.png" alt="Git Commit Message Generator Logo" width="128" height="128">
 </p>
 
-A powerful Git commit message generator that uses AI models to automatically analyze staged code changes and generate well-structured, standardized commit messages.
+Generate clear, conventional Git commit messages directly inside VS Code using your preferred AI provider.
 
 ---
 
-## Features
+## Table of Contents
 
-- 🤖 Automatically analyzes code changes using AI models  
-- 🔄 Supports multiple LLM services (Ollama, OpenAI, 阿里云百炼, 火山引擎, etc.)  
-- 🌍 Supports multilingual commit messages (Chinese, English, and more)  
-- ⚙️ Customizable prompt templates and generation parameters  
-- 🎨 Clean and intuitive user interface  
-- 🚀 Displays reasoning process for supported models, with local Ollama support  
+- [What this extension does](#what-this-extension-does)
+- [Who this is for](#who-this-is-for)
+- [Key features](#key-features)
+- [Quick start (5 minutes)](#quick-start-5-minutes)
+- [How to use](#how-to-use)
+- [Configuration](#configuration)
+  - [1) Core settings](#1-core-settings)
+  - [2) Provider settings](#2-provider-settings)
+  - [3) Example `settings.json` (Gemini)](#3-example-settingsjson-gemini)
+- [Supported providers](#supported-providers)
+- [Tips for better commit messages](#tips-for-better-commit-messages)
+- [Troubleshooting](#troubleshooting)
+- [FAQ](#faq)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## Installation
+## What this extension does
 
-1. Open the VS Code Extensions Marketplace  
-2. Search for **Git Commit Message Generator**  
-3. Click **Install**
+This extension reads your **staged Git changes**, sends a summary/diff to a configured LLM, and writes a commit message suggestion that follows **Conventional Commits** style.
+
+In short, it helps you:
+
+- write commit messages faster,
+- keep message style consistent,
+- reduce mental overhead when committing often.
 
 ---
 
+## Who this is for
 
-## Troubleshooting
+- Developers who want cleaner commit history.
+- Teams that use Conventional Commits (`feat:`, `fix:`, `chore:`...).
+- Beginners who are unsure how to phrase good commit messages.
 
-### `Extension 'chenkai2.vscode-git-commit-message-generator' not found.`
+---
 
-This message usually means VS Code cannot find the extension in the current registry (for example, it may not be available in your Marketplace region or is only published as a VSIX/Open VSX package).
+## Key features
 
-Try one of these options:
+- ✅ One-click commit message generation from staged changes.
+- ✅ Conventional-Commit-friendly output.
+- ✅ Multiple providers supported (cloud and local).
+- ✅ Configurable prompt, system instruction, and generation parameters.
+- ✅ Works from Source Control UI in VS Code.
 
-1. Install from a packaged release (`.vsix`) if available:
-   - `code --install-extension <path-to-vsix-file>`
-2. If you use VSCodium/Open VSX, install from Open VSX:
-   - `ovsx install chenkai2.vscode-git-commit-message-generator`
-3. Verify the extension ID and source registry in your environment before retrying.
+---
 
-### `没有暂存的文件，请先添加文件到暂存区`
+## Quick start (5 minutes)
 
-This warning appears when no staged changes are detected in the current repository.
+1. Install **Git Commit Message Generator** from your extension source.
+2. Open a Git repository in VS Code.
+3. Open **Settings (JSON)**.
+4. Add your provider config (example below uses Gemini).
+5. Stage your files in Source Control.
+6. Click **Generate Commit Message** in the Source Control toolbar.
 
-To fix it:
+Command ID used by this extension:
 
-1. Stage specific files from Source Control (`+` button), then run **Generate Commit Message** again.
-2. Or stage everything from terminal:
-   - `git add .`
-3. In the latest version, the extension also provides **Stage All and Retry** when it detects unstaged changes.
+- `git-commit-generator.generateCommitMessage`
 
-### Why commit messages may appear in Chinese
+---
 
-Older versions used Chinese defaults for `llm.prompt` and `llm.system`, so generated messages could be in Chinese even when your IDE is in English.
+## How to use
 
-Use the latest version, or override these settings in VS Code to enforce English output.
+1. Make code changes.
+2. Stage files in Source Control (`+`) or via terminal (`git add ...`).
+3. Run **Generate Commit Message** from the Source Control toolbar.
+4. Review the generated message.
+5. Edit if needed, then commit.
 
-## Usage
-
-1. Configure your AI service API settings in VS Code
-   - By default, the extension uses **阿里云百炼** with the model `deepseek-r1-distill-llama-70b`
-     - Get an API key: [阿里云百炼](https://bailian.console.aliyun.com/?apiKey=1#/api-key)
-     - After generating an API key, you can directly use multiple models. New users receive **1,000,000 free tokens per model for 6 months**. Available models include:
-       - `deepseek-v3`
-       - `deepseek-r1`
-       - `qwen2.5-32b-instruct`
-       - `deepseek-r1-distill-qwen-32b`
-       - `qwen-plus`
-       - `deepseek-r1-distill-llama-70b` (free, but may be slow due to high usage)
-       - `qwen2-7b-instruct`
-   - **火山引擎** is also recommended. Until **August 31, 2025**, each model provides **500,000 free tokens per day**
-     - After generating an API key, you must manually enable the required models
-     - Supported models are limited, mainly DeepSeek and Doubao series, for example:
-       - `deepseek-r1-250120` – 500k tokens/day
-       - `deepseek-r1-distill-qwen-32b-250120` – 500k tokens/day
-       - `deepseek-v3-250324` – 500k tokens/day (recommended)
-       - `doubao-1-5-pro-256k-250115` – 500k tokens/day
-   - Other OpenAI-compatible services are supported, such as Tencent Yuanbao, Anthropic, SiliconFlow, and DeepSeek
-   - Local Ollama deployments are supported. Simply set `protocol` to `ollama` and `url` to `http://localhost:11434/api/generate`
-
-2. In the Git Source Control view, stage the files you want to commit  
-3. Click the **Generate Commit Message** button in the toolbar  
-4. The extension will analyze the staged changes and generate a standardized commit message  
-5. For models with reasoning capabilities (such as DeepSeek), the reasoning process will be displayed in the status bar  
+> Important: the generator works on **staged changes**. If nothing is staged, no message will be generated.
 
 ---
 
 ## Configuration
 
-You can customize the following settings in VS Code:
+All settings are under the namespace:
 
-- `llm.prompt`: Prompt template used to generate commit messages  
-- `llm.system`: System instruction  
-- `llm.temperature`: Randomness of the generated result (0–1)  
-- `llm.top_p`: Cumulative probability threshold during sampling (0–1)  
-- `llm.max_tokens`: Maximum number of tokens in the generated result  
-- Provider-specific settings such as `url`, `model`, and `apiKey`
+- `git-commit-generator.*`
+
+### 1) Core settings
+
+- `git-commit-generator.llm.provider`  
+  Select active provider. Options:
+  `aliyun`, `openai`, `ollama`, `deepseek`, `anthropic`, `tencent`, `siliconflow`, `volcengine`, `gemini`, `custom`
+
+- `git-commit-generator.llm.prompt`  
+  Prompt template used for message generation.
+
+- `git-commit-generator.llm.system`  
+  System instruction for commit style.
+
+- `git-commit-generator.llm.temperature`  
+  Output randomness (0 to 1). Lower = more deterministic.
+
+- `git-commit-generator.llm.top_p`  
+  Nucleus sampling value (0 to 1).
+
+- `git-commit-generator.llm.max_tokens`  
+  Maximum generated token count.
+
+### 2) Provider settings
+
+Each provider uses this pattern:
+
+- `git-commit-generator.providers.<provider>.url`
+- `git-commit-generator.providers.<provider>.model`
+- `git-commit-generator.providers.<provider>.apiKey`
+- `git-commit-generator.providers.<provider>.protocol` (only for providers that require protocol selection)
+
+Examples of `<provider>` values:
+
+- `aliyun`
+- `openai`
+- `ollama`
+- `deepseek`
+- `anthropic`
+- `tencent`
+- `siliconflow`
+- `volcengine`
+- `gemini`
+- `custom`
+
+### 3) Example `settings.json` (Gemini)
+
+```json
+{
+  "git-commit-generator.llm.provider": "gemini",
+  "git-commit-generator.providers.gemini.apiKey": "YOUR_API_KEY",
+  "git-commit-generator.providers.gemini.model": "gemini-1.5-flash"
+}
+```
 
 ---
 
-## Supported LLM Services
+## Supported providers
 
-- Ollama (local deployment)  
-- OpenAI  
-- 阿里云百炼  
-- 火山引擎  
-- Anthropic  
-- 腾讯混元  
-- DeepSeek  
-- SiliconFlow  
-- Custom OpenAI-compatible services  
+- Alibaba Bailian (`aliyun`)
+- OpenAI (`openai`)
+- Ollama local (`ollama`)
+- DeepSeek (`deepseek`)
+- Anthropic (`anthropic`)
+- Tencent Hunyuan (`tencent`)
+- SiliconFlow (`siliconflow`)
+- Volcengine (`volcengine`)
+- Gemini (`gemini`)
+- Custom endpoint (`custom`)
 
 ---
 
-## Credits
+## Tips for better commit messages
 
-Commit message format inspired by  
-[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+- Stage related files together (one logical change per commit).
+- Keep commits small and focused.
+- Review generated text before committing.
+- Use scope when useful, e.g. `fix(auth): ...`.
+- Prefer imperative style, e.g. “add”, “fix”, “refactor”.
 
-Based on the original extension by chenkai2  
-Modified and maintained by klaveriuzent
+---
+
+## Troubleshooting
+
+### 1) "No staged files" warning
+
+Cause: no files are staged.
+
+Fix:
+
+- Stage files in Source Control, then run generator again.
+- Or use terminal: `git add .`
+
+### 2) Output language/style is not what you want
+
+Fix:
+
+- Customize `git-commit-generator.llm.prompt`
+- Customize `git-commit-generator.llm.system`
+- Lower `temperature` for more consistent output
+
+### 3) API request failed
+
+Check:
+
+- Correct provider selected in `git-commit-generator.llm.provider`
+- Valid `apiKey`
+- Correct `url` and `model`
+- Internet/network access for cloud providers
+
+### 4) Local Ollama not responding
+
+Check:
+
+- Ollama service is running
+- URL is reachable (commonly `http://localhost:11434/api/generate`)
+- Model is installed locally
+
+---
+
+## FAQ
+
+### Does this extension commit automatically?
+
+No. It only generates the commit message. You still review and commit manually.
+
+### Can I use my own OpenAI-compatible endpoint?
+
+Yes. Use provider `custom` and set your endpoint/model/api key.
+
+### Does it support team conventions?
+
+Yes. You can enforce team style via `llm.system` and `llm.prompt`.
 
 ---
 
 ## Contributing
 
-Issues and feature requests are welcome!  
-If you’d like to contribute code, feel free to submit a pull request.
+Issues and pull requests are welcome.
+
+If you plan to contribute code, please:
+
+1. Open an issue describing the change.
+2. Keep PRs focused and small.
+3. Include clear testing notes.
+
+---
+
+## Credits
+
+Commit message format inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+
+Based on the original extension by chenkai2.  
+Modified and maintained by klaveriuzent.
 
 ---
 

@@ -31,13 +31,13 @@
   ],
   "icon": "media/panda-avatar.png",
   "activationEvents": [
-    "onCommand:vscode-git-commit-message-generator.generateCommitMessage"
+    "onCommand:git-commit-generator.generateCommitMessage"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "vscode-git-commit-message-generator.generateCommitMessage",
+        "command": "git-commit-generator.generateCommitMessage",
         "title": "Generate Commit Message",
         "icon": {
           "dark": "media/commit-message-generator-dark.svg",
@@ -49,7 +49,7 @@
       "scm/title": [
         {
           "when": "scmProvider == git",
-          "command": "vscode-git-commit-message-generator.generateCommitMessage",
+          "command": "git-commit-generator.generateCommitMessage",
           "group": "navigation",
           "order": 1
         }
@@ -58,7 +58,7 @@
     "configuration": {
       "title": "Git Commit Message Generator",
       "properties": {
-        "vscode-git-commit-message-generator.llm.provider": {
+        "git-commit-generator.llm.provider": {
           "type": "string",
           "enum": [
             "aliyun",
@@ -87,12 +87,12 @@
           "default": "custom",
           "description": "Choose LLM service provider"
         },
-        "vscode-git-commit-message-generator.providers.aliyun.url": {
+        "git-commit-generator.providers.aliyun.url": {
           "type": "string",
           "default": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
           "description": "Alibaba Bailian API URL"
         },
-        "vscode-git-commit-message-generator.providers.aliyun.model": {
+        "git-commit-generator.providers.aliyun.model": {
           "type": "string",
           "enum": [
             "Moonshot-Kimi-K2-Instruct",
@@ -149,17 +149,17 @@
           "default": "deepseek-v3.2",
           "description": "Alibaba Bailian model"
         },
-        "vscode-git-commit-message-generator.providers.aliyun.apiKey": {
+        "git-commit-generator.providers.aliyun.apiKey": {
           "type": "string",
           "default": "",
           "description": "Alibaba Bailian API key"
         },
-        "vscode-git-commit-message-generator.providers.openai.url": {
+        "git-commit-generator.providers.openai.url": {
           "type": "string",
           "default": "https://api.openai.com/v1/chat/completions",
           "description": "OpenAI API URL"
         },
-        "vscode-git-commit-message-generator.providers.openai.model": {
+        "git-commit-generator.providers.openai.model": {
           "type": "string",
           "enum": [
             "gpt-5.2",
@@ -184,27 +184,27 @@
           "default": "gpt-5-mini",
           "description": "OpenAI model"
         },
-        "vscode-git-commit-message-generator.providers.openai.apiKey": {
+        "git-commit-generator.providers.openai.apiKey": {
           "type": "string",
           "default": "",
           "description": "OpenAI API key"
         },
-        "vscode-git-commit-message-generator.providers.ollama.url": {
+        "git-commit-generator.providers.ollama.url": {
           "type": "string",
           "default": "http://localhost:11434/api/generate",
           "description": "Ollama API URL"
         },
-        "vscode-git-commit-message-generator.providers.ollama.model": {
+        "git-commit-generator.providers.ollama.model": {
           "type": "string",
           "default": "deepseek-r1:7b",
           "description": "Ollama model name"
         },
-        "vscode-git-commit-message-generator.providers.ollama.apiKey": {
+        "git-commit-generator.providers.ollama.apiKey": {
           "type": "string",
           "default": "",
           "description": "Ollama API key"
         },
-        "vscode-git-commit-message-generator.providers.ollama.protocol": {
+        "git-commit-generator.providers.ollama.protocol": {
           "type": "string",
           "enum": [
             "openai",
@@ -213,12 +213,12 @@
           "default": "ollama",
           "description": "Ollama protocol"
         },
-        "vscode-git-commit-message-generator.providers.deepseek.url": {
+        "git-commit-generator.providers.deepseek.url": {
           "type": "string",
           "default": "https://api.deepseek.com/v1/chat/completions",
           "description": "DeepSeek API URL"
         },
-        "vscode-git-commit-message-generator.providers.deepseek.model": {
+        "git-commit-generator.providers.deepseek.model": {
           "type": "string",
           "enum": [
             "deepseek-chat",
@@ -227,17 +227,17 @@
           "default": "deepseek-chat",
           "description": "DeepSeek model"
         },
-        "vscode-git-commit-message-generator.providers.deepseek.apiKey": {
+        "git-commit-generator.providers.deepseek.apiKey": {
           "type": "string",
           "default": "",
           "description": "DeepSeek API key"
         },
-        "vscode-git-commit-message-generator.providers.anthropic.url": {
+        "git-commit-generator.providers.anthropic.url": {
           "type": "string",
           "default": "https://api.anthropic.com/v1/messages",
           "description": "Anthropic API URL"
         },
-        "vscode-git-commit-message-generator.providers.anthropic.model": {
+        "git-commit-generator.providers.anthropic.model": {
           "type": "string",
           "enum": [
             "claude-sonnet-4-5",
@@ -261,17 +261,17 @@
           "default": "claude-sonnet-4-5",
           "description": "Anthropic model"
         },
-        "vscode-git-commit-message-generator.providers.anthropic.apiKey": {
+        "git-commit-generator.providers.anthropic.apiKey": {
           "type": "string",
           "default": "",
           "description": "Anthropic API key"
         },
-        "vscode-git-commit-message-generator.providers.tencent.url": {
+        "git-commit-generator.providers.tencent.url": {
           "type": "string",
           "default": "https://api.hunyuan.cloud.tencent.com/v1/chat/completions",
           "description": "Tencent Hunyuan API URL"
         },
-        "vscode-git-commit-message-generator.providers.tencent.model": {
+        "git-commit-generator.providers.tencent.model": {
           "type": "string",
           "enum": [
             "hunyuan-2.0-thinking-20251109",
@@ -294,32 +294,32 @@
           "default": "hunyuan-2.0-instruct-20251111",
           "description": "Tencent Hunyuan model"
         },
-        "vscode-git-commit-message-generator.providers.tencent.apiKey": {
+        "git-commit-generator.providers.tencent.apiKey": {
           "type": "string",
           "default": "",
           "description": "Tencent Hunyuan API key"
         },
-        "vscode-git-commit-message-generator.providers.siliconflow.url": {
+        "git-commit-generator.providers.siliconflow.url": {
           "type": "string",
           "default": "https://api.siliconflow.cn/v1/chat/completions",
           "description": "SiliconFlow API URL"
         },
-        "vscode-git-commit-message-generator.providers.siliconflow.model": {
+        "git-commit-generator.providers.siliconflow.model": {
           "type": "string",
           "default": "THUDM/glm-4-9b-chat",
           "description": "SiliconFlow model"
         },
-        "vscode-git-commit-message-generator.providers.siliconflow.apiKey": {
+        "git-commit-generator.providers.siliconflow.apiKey": {
           "type": "string",
           "default": "",
           "description": "SiliconFlow API key"
         },
-        "vscode-git-commit-message-generator.providers.volcengine.url": {
+        "git-commit-generator.providers.volcengine.url": {
           "type": "string",
           "default": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
           "description": "Volcengine API URL"
         },
-        "vscode-git-commit-message-generator.providers.volcengine.model": {
+        "git-commit-generator.providers.volcengine.model": {
           "type": "string",
           "enum": [
             "deepseek-v3-2-251201",
@@ -343,17 +343,17 @@
           "default": "deepseek-v3-2-251201",
           "description": "Volcengine model"
         },
-        "vscode-git-commit-message-generator.providers.volcengine.apiKey": {
+        "git-commit-generator.providers.volcengine.apiKey": {
           "type": "string",
           "default": "",
           "description": "Volcengine API key"
         },
-        "vscode-git-commit-message-generator.providers.gemini.url": {
+        "git-commit-generator.providers.gemini.url": {
           "type": "string",
           "default": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
           "description": "Google Generative Language API URL"
         },
-        "vscode-git-commit-message-generator.providers.gemini.model": {
+        "git-commit-generator.providers.gemini.model": {
           "type": "string",
           "enum": [
             "gemini-2.5-flash",
@@ -363,12 +363,12 @@
           "default": "gemini-2.5-flash",
           "description": "Google Gemini model"
         },
-        "vscode-git-commit-message-generator.providers.gemini.apiKey": {
+        "git-commit-generator.providers.gemini.apiKey": {
           "type": "string",
           "default": "",
           "description": "Google Gemini API key"
         },
-        "vscode-git-commit-message-generator.providers.gemini.protocol": {
+        "git-commit-generator.providers.gemini.protocol": {
           "type": "string",
           "enum": [
             "gemini"
@@ -376,22 +376,22 @@
           "default": "gemini",
           "description": "Gemini protocol"
         },
-        "vscode-git-commit-message-generator.providers.custom.url": {
+        "git-commit-generator.providers.custom.url": {
           "type": "string",
           "default": "",
           "description": "Custom API URL"
         },
-        "vscode-git-commit-message-generator.providers.custom.model": {
+        "git-commit-generator.providers.custom.model": {
           "type": "string",
           "default": "",
           "description": "Custom model"
         },
-        "vscode-git-commit-message-generator.providers.custom.apiKey": {
+        "git-commit-generator.providers.custom.apiKey": {
           "type": "string",
           "default": "",
           "description": "Custom API key"
         },
-        "vscode-git-commit-message-generator.providers.custom.protocol": {
+        "git-commit-generator.providers.custom.protocol": {
           "type": "string",
           "enum": [
             "openai",
@@ -400,31 +400,31 @@
           "default": "openai",
           "description": "Custom protocol"
         },
-        "vscode-git-commit-message-generator.llm.prompt": {
+        "git-commit-generator.llm.prompt": {
           "type": "string",
           "default": "Generate a Git commit message from the following changes using Conventional Commits 1.0.0.\nFiles:\n${files}\nDiff:\n${diff}",
           "description": "Prompt template for generating commit messages. Supports ${files} and ${diff} variables."
         },
-        "vscode-git-commit-message-generator.llm.system": {
+        "git-commit-generator.llm.system": {
           "type": "string",
           "default": "Follow Conventional Commits 1.0.0 exactly. Use: <type>[optional scope][!]: <description>. Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. Use imperative mood and lowercase type/scope. Add body/footer only when needed.",
           "description": "System instruction for commit message generation"
         },
-        "vscode-git-commit-message-generator.llm.temperature": {
+        "git-commit-generator.llm.temperature": {
           "type": "number",
           "default": 0.7,
           "minimum": 0,
           "maximum": 1,
           "description": "Temperature parameter for LLM output; higher values produce more random results"
         },
-        "vscode-git-commit-message-generator.llm.top_p": {
+        "git-commit-generator.llm.top_p": {
           "type": "number",
           "default": 0.9,
           "minimum": 0,
           "maximum": 1,
           "description": "Top-p parameter for LLM output; controls cumulative probability during sampling"
         },
-        "vscode-git-commit-message-generator.llm.max_tokens": {
+        "git-commit-generator.llm.max_tokens": {
           "type": "number",
           "default": 2048,
           "minimum": 1,
