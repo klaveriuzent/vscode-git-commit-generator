@@ -169,6 +169,18 @@ export function activate(context: vscode.ExtensionContext) {
 async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: any, statusBarMessage: vscode.StatusBarItem): Promise<string> {
   const modelServices = [
     {
+      name: 'gemini',
+      // @doc https://ai.google.dev/gemini-api/docs/text-generation
+      hostname: 'generativelanguage.googleapis.com',
+      protocol: 'gemini',
+      apiSuffix: '/v1beta/models/gemini-2.5-flash:generateContent',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': ''
+      },
+      AuthKey: 'x-goog-api-key'
+    },
+    {
       name: 'ollama',
       // @doc https://github.com/ollama/ollama/blob/main/docs/api.md#chat
       protocol: 'ollama',
@@ -320,6 +332,9 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
       case 'ollama':
         serviceName = 'ollama';
         break;
+      case 'gemini':
+        serviceName = 'gemini';
+        break;
       case 'openai':
       default:
         serviceName = 'openai';
@@ -464,7 +479,7 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
           stream: true
         };
         break;
-      case "ollama":
+    case "ollama":
         requestData = {
           model: model,
           system: system,
@@ -473,6 +488,19 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
           top_p: topP,
           max_tokens: maxTokens,
           stream: true
+        };
+        break;
+      case "gemini":
+        requestData = {
+          contents: [
+            {
+              parts: [
+                {
+                  text: `${system}\n\nFiles:\n${stagedFiles.join('\n')}\n\nDiff:\n${diffContent}`
+                }
+              ]
+            }
+          ]
         };
         break;
   }
@@ -489,12 +517,11 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
       'Content-Type': 'application/json'
     }
   };
-  options.headers = serviceConfig.headers;
-  if (apiKey && serviceConfig.AuthKey && typeof serviceConfig.AuthKey === 'string' && options.headers[serviceConfig.AuthKey as keyof typeof options.headers]) {
+  options.headers = { ...(serviceConfig.headers || {}) };
+  if (apiKey && serviceConfig.AuthKey && typeof serviceConfig.AuthKey === 'string') {
     const authKey = serviceConfig.AuthKey as keyof typeof options.headers;
-    if (options.headers[authKey]) {
-      options.headers[authKey] = options.headers[authKey] + apiKey;
-    }
+    const existingValue = options.headers[authKey];
+    options.headers[authKey] = (existingValue !== undefined ? String(existingValue) : '') + apiKey;
   }
   const optionsStr = JSON.stringify(options);
   console.log(`[committer] LLM API request: ${optionsStr}`+'\n');
@@ -508,8 +535,13 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
       let generatedText = '';
       let generatedThinking = '';
       let isThinking = false;
+      let rawResponse = '';
 
       res.on('data', (chunk) => {
+        rawResponse += chunk.toString();
+        if (serviceConfig?.protocol === 'gemini') {
+          return;
+        }
         const lines = chunk.toString().split('\n').filter((line: string) => line.trim());
         
         for (const line of lines) {
@@ -617,7 +649,7 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
                   }
                 }
                 break;
-              case "ollama":
+            case "ollama":
               default:
                 if (response.response) {
                   let content = response.response;
@@ -662,6 +694,22 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
       });
       
       res.on('end', () => {
+        if (serviceConfig?.protocol === 'gemini') {
+          try {
+            const response = JSON.parse(rawResponse);
+            const geminiText = response?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (typeof geminiText === 'string' && geminiText.trim()) {
+              resolve(geminiText.trim().replace(/^```[a-zA-Z0-9]*\n|```/g, ''));
+              return;
+            }
+            const errorMessage = response?.error?.message || 'No valid Gemini response data received';
+            reject(new Error(`Gemini API error: ${errorMessage}`));
+            return;
+          } catch (error) {
+            reject(new Error(`Gemini response parse error: ${error instanceof Error ? error.message : String(error)}`));
+            return;
+          }
+        }
         if (generatedText) {
           resolve(generatedText.trim().replace(/^```[a-zA-Z0-9]*\n|```/g, ''));
         } else {
@@ -791,6 +839,11 @@ function getProviderPresets(): Record<string, any> {
       url: 'https://api.siliconflow.cn/v1/chat/completions',
       model: 'deepseek-ai/DeepSeek-V3',
       protocol: 'openai'
+    },
+    'gemini': {
+      url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+      model: 'gemini-2.5-flash',
+      protocol: 'gemini'
     },
     'volcengine': {
       url: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
