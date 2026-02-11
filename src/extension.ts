@@ -5,10 +5,10 @@ import * as http from 'http';
 import * as url from 'url';
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('[EXTENSION] vscode-git-commit-message-generator activated');
+  console.log('[EXTENSION] git-commit-generator activated');
 
   // Register command
-  const disposable = vscode.commands.registerCommand('vscode-git-commit-message-generator.generateCommitMessage', async (sourceControl) => {
+  const disposable = vscode.commands.registerCommand('git-commit-generator.generateCommitMessage', async (sourceControl) => {
     try {
       // Get Git extension
       const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports;
@@ -263,7 +263,8 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
     }
   ];
   // Get configuration
-  const config = vscode.workspace.getConfiguration('vscode-git-commit-message-generator');
+  const config = vscode.workspace.getConfiguration('git-commit-generator');
+
   const provider = config.get<string>('llm.provider') || 'aliyun';
   let apiUrl = '';
   let model = '';

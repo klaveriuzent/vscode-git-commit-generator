@@ -1,5 +1,31 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- Added explicit support documentation for the new settings namespace `git-commit-generator.*` for all provider and LLM options.
+- Added a clearer migration path in behavior notes by standardizing command usage to `git-commit-generator.generateCommitMessage`.
+
+### Changed
+- Renamed extension command identifiers from `vscode-git-commit-message-generator.generateCommitMessage` to `git-commit-generator.generateCommitMessage` in extension contributions and runtime registration.
+- Renamed all contributed VS Code settings keys from `vscode-git-commit-message-generator.*` to `git-commit-generator.*` to align with the new extension namespace.
+- Updated runtime configuration resolution to read only from `git-commit-generator` workspace configuration.
+- Updated activation diagnostics log prefix to `git-commit-generator` for consistent observability and troubleshooting.
+
+### Removed
+- Removed legacy runtime fallback reads from `vscode-git-commit-message-generator` configuration keys.
+- Removed dual-namespace resolution helper logic to eliminate ambiguous key precedence and reduce maintenance complexity.
+
+### Notes
+- This update is intentionally **not backward compatible** at runtime for old namespace keys.
+- Existing user settings should be migrated from:
+  - `vscode-git-commit-message-generator.llm.provider` → `git-commit-generator.llm.provider`
+  - `vscode-git-commit-message-generator.providers.<name>.*` → `git-commit-generator.providers.<name>.*`
+- Example (Gemini):
+  - `git-commit-generator.llm.provider = "gemini"`
+  - `git-commit-generator.providers.gemini.apiKey = "..."`
+  - `git-commit-generator.providers.gemini.model = "gemini-1.5-flash"`
+
 ## [0.1.6] - 2025-12-26
 
 ### 优化
