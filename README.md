@@ -18,7 +18,8 @@ Generate clear, conventional Git commit messages directly inside VS Code using y
 - [Configuration](#configuration)
   - [1) Core settings](#1-core-settings)
   - [2) Provider settings](#2-provider-settings)
-  - [3) Example `settings.json` (Gemini)](#3-example-settingsjson-gemini)
+  - [3) Protocol settings](#3-protocol-settings)
+  - [4) Example `settings.json` (Gemini)](#4-example-settingsjson-gemini)
 - [Supported providers](#supported-providers)
 - [Tips for better commit messages](#tips-for-better-commit-messages)
 - [Troubleshooting](#troubleshooting)
@@ -119,7 +120,15 @@ Each provider uses this pattern:
 - `git-commit-generator.providers.<provider>.url`
 - `git-commit-generator.providers.<provider>.model`
 - `git-commit-generator.providers.<provider>.apiKey`
-- `git-commit-generator.providers.<provider>.protocol` (only for providers that require protocol selection)
+
+### 3) Protocol settings
+
+Some providers also include a protocol selector:
+
+- `git-commit-generator.providers.gemini.protocol`
+  - Available value: `gemini`
+- `git-commit-generator.providers.custom.protocol`
+  - Available values: `openai`, `ollama`
 
 Examples of `<provider>` values:
 
@@ -134,13 +143,26 @@ Examples of `<provider>` values:
 - `gemini`
 - `custom`
 
-### 3) Example `settings.json` (Gemini)
+### 4) Example `settings.json` (Gemini)
 
 ```json
 {
   "git-commit-generator.llm.provider": "gemini",
   "git-commit-generator.providers.gemini.apiKey": "YOUR_API_KEY",
-  "git-commit-generator.providers.gemini.model": "gemini-1.5-flash"
+  "git-commit-generator.providers.gemini.model": "gemini-2.5-flash",
+  "git-commit-generator.providers.gemini.protocol": "gemini"
+}
+```
+
+You can also set custom OpenAI-compatible or Ollama-compatible endpoints:
+
+```json
+{
+  "git-commit-generator.llm.provider": "custom",
+  "git-commit-generator.providers.custom.url": "https://your-endpoint.example.com/v1/chat/completions",
+  "git-commit-generator.providers.custom.model": "your-model-name",
+  "git-commit-generator.providers.custom.apiKey": "YOUR_API_KEY",
+  "git-commit-generator.providers.custom.protocol": "openai"
 }
 ```
 
