@@ -8,6 +8,11 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('[EXTENSION] git-commit-generator activated');
 
   // Register command
+  const openSettingsDisposable = vscode.commands.registerCommand('git-commit-generator.openSettings', async () => {
+    await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:Klaveriuzent.git-commit-message-generator');
+  });
+  context.subscriptions.push(openSettingsDisposable);
+
   const disposable = vscode.commands.registerCommand('git-commit-generator.generateCommitMessage', async (sourceControl) => {
     try {
       // Get Git extension

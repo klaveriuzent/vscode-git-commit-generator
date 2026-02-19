@@ -44,6 +44,11 @@
           "dark": "media/commit-message-generator-dark.svg",
           "light": "media/commit-message-generator-light.svg"
         }
+      },
+      {
+        "command": "git-commit-generator.openSettings",
+        "title": "Open Commit Generator Settings",
+        "icon": "$(gear)"
       }
     ],
     "menus": {
@@ -53,6 +58,12 @@
           "command": "git-commit-generator.generateCommitMessage",
           "group": "navigation",
           "order": 1
+        },
+        {
+          "when": "scmProvider == git",
+          "command": "git-commit-generator.openSettings",
+          "group": "navigation",
+          "order": 2
         }
       ]
     },
