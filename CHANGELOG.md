@@ -9,6 +9,7 @@
 ### Changed
 - Renamed extension command identifiers from `vscode-git-commit-message-generator.generateCommitMessage` to `git-commit-generator.generateCommitMessage` in extension contributions and runtime registration.
 - Renamed all contributed VS Code settings keys from `vscode-git-commit-message-generator.*` to `git-commit-generator.*` to align with the new extension namespace.
+- Standardized legacy prompt/system contributed keys from `git-commit-message-generator.llm.*` to `git-commit-generator.llm.*` for consistent configuration naming.
 - Updated runtime configuration resolution to read only from `git-commit-generator` workspace configuration.
 - Updated activation diagnostics log prefix to `git-commit-generator` for consistent observability and troubleshooting.
 

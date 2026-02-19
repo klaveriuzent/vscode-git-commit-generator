@@ -401,16 +401,6 @@
           "default": "openai",
           "description": "Custom protocol"
         },
-        "git-commit-message-generator.llm.prompt": {
-          "type": "string",
-          "default": "Generate a single Git commit message based on the following changes.\n\nFiles:\n${files}\n\nDiff:\n${diff}",
-          "description": "Prompt template for generating commit messages. Supports ${files} and ${diff} variables."
-        },
-        "git-commit-message-generator.llm.system": {
-          "type": "string",
-          "default": "Follow Conventional Commits 1.0.0 strictly.\n\nFormat:\n<type>[optional scope][!]: <description>\n\nRules:\n- Output ONLY the commit message\n- Do not include explanations or code blocks\n- Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert\n- Use lowercase for type and scope\n- Use imperative mood (e.g., \"add\" not \"added\")\n- Do not end description with a period\n- Limit header to 72 characters\n- Generate a single commit message only\n- Add body or footer only if necessary\n- Use BREAKING CHANGE footer when required",
-          "description": "System instruction for commit message generation"
-        },
         "git-commit-generator.llm.temperature": {
           "type": "number",
           "default": 0.7,
@@ -431,6 +421,16 @@
           "minimum": 1,
           "maximum": 8192,
           "description": "Maximum token count for LLM output"
+        },
+        "git-commit-generator.llm.prompt": {
+          "type": "string",
+          "default": "Generate a single Git commit message based on the following changes.\n\nFiles:\n${files}\n\nDiff:\n${diff}",
+          "description": "Prompt template for generating commit messages. Supports ${files} and ${diff} variables."
+        },
+        "git-commit-generator.llm.system": {
+          "type": "string",
+          "default": "Follow Conventional Commits 1.0.0 strictly.\n\nFormat:\n<type>[optional scope][!]: <description>\n\nRules:\n- Output ONLY the commit message\n- Do not include explanations or code blocks\n- Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert\n- Use lowercase for type and scope\n- Use imperative mood (e.g., \"add\" not \"added\")\n- Do not end description with a period\n- Limit header to 72 characters\n- Generate a single commit message only\n- Add body or footer only if necessary\n- Use BREAKING CHANGE footer when required",
+          "description": "System instruction for commit message generation"
         }
       }
     }
