@@ -463,6 +463,6 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "simple-git": "^3.31.1"
+    "simple-git": "^3.32.2"
   }
 }
