@@ -219,10 +219,10 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
       // @doc https://docs.anthropic.com/en/api/getting-started
       hostname: 'api.anthropic.com',
       protocol: 'anthropic',
-      apiSuffix: '/chat/completions',
+      apiSuffix: '/v1/messages',
       headers: {
         'Content-Type': 'application/json',
-        "Authorization": "Bearer ",
+        'x-api-key': '',
         'anthropic-version': '2023-06-01'
       },
       AuthKey: 'x-api-key'
@@ -650,6 +650,25 @@ async function callLLMAPI(stagedFiles: string[], diffContent: string, inputBox: 
                   }
                 }
                 break;
+            case 'anthropic': {
+              if (response.type === 'content_block_delta' && response.delta?.text) {
+                generatedText += response.delta.text;
+                inputBox.value = generatedText;
+              }
+
+              // Handle non-stream response format fallback.
+              if (Array.isArray(response.content) && generatedText.length === 0) {
+                const fullContent = response.content
+                  .filter((item: { type?: string; text?: string }) => item?.type === 'text' && typeof item.text === 'string')
+                  .map((item: { text: string }) => item.text)
+                  .join('');
+                if (fullContent) {
+                  generatedText += fullContent;
+                  inputBox.value = generatedText;
+                }
+              }
+              break;
+            }
             case "ollama":
               default:
                 if (response.response) {
