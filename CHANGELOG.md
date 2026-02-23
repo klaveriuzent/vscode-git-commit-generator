@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.7] - 2026-02-23
 
 ### Added
 - Added explicit support documentation for the new settings namespace `git-commit-generator.*` for all provider and LLM options.
